@@ -1,6 +1,6 @@
 from pyvda import VirtualDesktop, get_virtual_desktops
 
-def switch_to_desktop(virtual_desktop: int = 0) -> bool:
+def switch_to_desktop(virtual_desktop: int = 1) -> bool:
     """
     Switch to selected virtual desktop
     """
@@ -8,7 +8,7 @@ def switch_to_desktop(virtual_desktop: int = 0) -> bool:
 
     total_virtual_desktop = get_total_virtual_desktops()
 
-    if total_virtual_desktop > 0 and virtual_desktop >= 0 and virtual_desktop < total_virtual_desktop:
+    if total_virtual_desktop > 0 and virtual_desktop >= 1 and virtual_desktop <= total_virtual_desktop:
         VirtualDesktop(virtual_desktop).go()
 
         return True
