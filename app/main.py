@@ -1,8 +1,9 @@
+import uvicorn
+
 from fastapi import FastAPI
 
-from routes import routes
-
-import uvicorn
+from routes import api, desktop
+from routes.devices import elio
 
 app = FastAPI(
     title="GiraDesktp",
@@ -16,7 +17,9 @@ app = FastAPI(
 )
 
 # Include routers.
-app.include_router(routes, prefix="/api", tags=["api"])
+app.include_router(api.router, prefix="/api", tags=["api"])
+app.include_router(desktop.router, prefix="/api", tags=["desktop"])
+app.include_router(elio.router, prefix="/api", tags=["devices"])
 
 if __name__ == "__main__":   
     uvicorn.run(app, host="0.0.0.0", port=8000)
