@@ -2,12 +2,12 @@ from typing import Union
 from pydantic import BaseModel
 
 
-class VirtualDesktopResponse(BaseModel):
+class DesktopResponse(BaseModel):
     """
-    Response for virtual desktop data endpoint
+    Response for  desktop data endpoint
     """
 
-    actual: int
+    active: int
 
 class ElioDevice(BaseModel):
     time: Union[int, None] = None
