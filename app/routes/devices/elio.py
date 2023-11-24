@@ -3,8 +3,7 @@ from fastapi import APIRouter
 from app.models import ElioDevice
 
 router = APIRouter(
-    prefix="/elio",
-    tags=["device_elio"]
+    prefix="/elio"
 )
 
 @router.post("/")

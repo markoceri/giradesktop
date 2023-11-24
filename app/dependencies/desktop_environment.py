@@ -2,6 +2,8 @@ import platform
 
 if platform.system() == 'Windows':
     from pyvda import VirtualDesktop, get_virtual_desktops
+elif(platform.system() == 'Linux'):
+    print(platform.system())
 
 def switch_to_desktop(virtual_desktop: int = 1) -> bool:
     """
