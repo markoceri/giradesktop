@@ -1,3 +1,5 @@
 fastapi
 uvicorn
-pyvda
+pyautogui
+wmctrl
+#pyvda
