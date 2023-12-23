@@ -10,7 +10,6 @@ A physical device to switch across your virtual desktops
 - [x] Manage different desktop environments
   - [x] Windows 11
   - [x] Linux (_using wmctrl library_)
-- 
 
 ## Roadmap
 - [x] Create a first prototype of cube and implement support for main desktops (Windows and Linux) with rotation features
