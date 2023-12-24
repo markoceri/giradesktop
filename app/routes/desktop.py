@@ -11,13 +11,21 @@ router = APIRouter(
 
 desktop: Desktop = Desktop()
 
-@router.get("/", response_model=DesktopResponse)
+@router.get("", response_model=DesktopResponse)
 def get_desktop():
     return DesktopResponse(active=desktop.get_current_desktop())
 
-@router.post("/")
+@router.post("")
 async def go_to_desktop(desktopId: int):
     if desktop.go_desktop(desktopId):
         return DesktopResponse(active=desktopId)
     else:
         JSONResponse(status_code=status.HTTP_406_NOT_ACCEPTABLE)
+
+@router.get("/next", response_model=DesktopResponse)
+def go_next_desktop():
+    return DesktopResponse(active=desktop.go_next_desktop())
+
+@router.get("/prev", response_model=DesktopResponse)
+def go_prev_desktop():
+    return DesktopResponse(active=desktop.go_prev_desktop())

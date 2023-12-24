@@ -36,5 +36,11 @@ class Desktop(metaclass=Singleton):
     def go_desktop(self, desktop: int) -> bool:
         return self.__desktop_manager.go_desktop(desktop)
     
+    def go_next_desktop(self) -> bool:
+        return self.__desktop_manager.go_next_desktop()
+    
+    def go_prev_desktop(self) -> bool:
+        return self.__desktop_manager.go_prev_desktop()
+    
 
     

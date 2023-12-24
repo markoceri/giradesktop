@@ -8,24 +8,37 @@ import sys, os
 
 if sys.platform == 'linux':
     from wmctrl import Desktop
+elif sys.platform == 'win32':
+    from pyvda import VirtualDesktop, get_virtual_desktops
 
 class DesktopManagerInterface(metaclass=abc.ABCMeta):
     def __init__(self):
-        self._virtual_desktops_number: int
-        self._os: str
+        self.__virtual_desktops_number: int
 
     def get_virtual_desktops_number(self) -> int:
         """
         Get the number of total available virtual desktops
         """
-        return self._virtual_desktops_count
+        return self.__virtual_desktops_number
     
     def set_virtual_desktops_number(self, dekstops) -> None:
         """
         Set the number of total available virtual desktops
         """
-        self._virtual_desktops_count = dekstops
+        self.__virtual_desktops_number = dekstops
     
+    def go_next_desktop(self) -> bool:
+        """
+        Go to the next virtual desktop
+        """
+        return self.go_desktop(self.get_current_desktop() + 1 % (self.get_virtual_desktops_number()))
+
+    def go_prev_desktop(self) -> bool:
+        """
+        Go to the previous virtual desktop
+        """
+        return self.go_desktop((self.get_virtual_desktops_number() if self.get_current_desktop() == 0 else self.get_current_desktop()) - 1 % (self.get_virtual_desktops_number()))
+
     @abc.abstractmethod
     def get_current_desktop(self) -> int:
         """
@@ -33,20 +46,6 @@ class DesktopManagerInterface(metaclass=abc.ABCMeta):
         """
         raise NotImplementedError
     
-    @abc.abstractmethod
-    def go_next_desktop(self) -> bool:
-        """
-        Go to the next virtual desktop
-        """
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def go_prev_desktop(self) -> bool:
-        """
-        Go to the previous virtual desktop
-        """
-        raise NotImplementedError
-
     @abc.abstractmethod
     def go_desktop(self, desktop: int) -> bool:
         """
@@ -96,66 +95,23 @@ class DesktopManagerInterface(metaclass=abc.ABCMeta):
         """
         raise NotImplementedError
 
-class DesktopManagerWindows(DesktopManagerInterface):
-    if get_desktop_environment() == 'windows':
-        from pyvda import VirtualDesktop, get_virtual_desktops
+class DesktopManagerWindows(DesktopManagerInterface):        
     
     def __init__(self):
         super().__init__()
 
-        self._virtual_desktops_number = len(get_virtual_desktops())
+        self.set_virtual_desktops_number(len(get_virtual_desktops()))
 
     def get_current_desktop(self) -> int:
         current_desktop = VirtualDesktop.current()
         if current_desktop:
-            return current_desktop.number
+            return current_desktop.number - 1
         else:
             return -1
 
-    def set_virtual_desktops_number(self, dekstops) -> None:
-        pass
-
-    def go_next_desktop(self) -> bool:
-        current_desktop: object
-        actual_virtual_desktop: int
-        next_virtual_desktop: int
-
-        current_desktop = VirtualDesktop.current()
-        if current_desktop:
-            actual_virtual_desktop = current_desktop.number
-        else:
-            return False
-
-        if actual_virtual_desktop < self._virtual_desktops_number:
-            next_virtual_desktop = actual_virtual_desktop + 1
-            self.go_desktop(next_virtual_desktop)
-
-            return True
-        else:
-            return False
-        
-    def go_prev_desktop(self) -> bool:
-        current_desktop: object
-        actual_virtual_desktop: int
-        prev_virtual_desktop: int
-
-        current_desktop = VirtualDesktop.current()
-        if current_desktop:
-            actual_virtual_desktop = current_desktop.number
-        else:
-            return False
-
-        if actual_virtual_desktop > 0:
-            prev_virtual_desktop = actual_virtual_desktop - 1
-            self.go_desktop(prev_virtual_desktop)
-
-            return True
-        else:
-            return False
-
     def go_desktop(self, desktop: int) -> bool:
-        if desktop >= 0 and  desktop <= self.get_virtual_desktops_number():
-            VirtualDesktop(desktop).go()
+        if desktop >= 0 and  desktop < self.get_virtual_desktops_number():
+            VirtualDesktop(desktop + 1).go()
 
             return True
         else:
@@ -174,10 +130,10 @@ class DesktopManagerWindows(DesktopManagerInterface):
         return self.go_prev_desktop()
     
     def go_top_desktop(self) -> bool:
-        return self.go_up_desktop(self.get_virtual_desktops_number())
+        return self.go_desktop(self.get_virtual_desktops_number() - 1)
     
     def go_bottom_desktop(self) -> bool:
-        return self.go_up_desktop(0)
+        return self.go_desktop(0)
 
 class DesktopManagerWMCtrl(DesktopManagerInterface):    
     def __init__(self):
